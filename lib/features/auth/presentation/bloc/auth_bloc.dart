@@ -9,7 +9,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc({SupabaseClient? supabase})
     : _supabase = supabase ?? Supabase.instance.client,
-      super(AuthInitial()) {
+      super(
+        (supabase ?? Supabase.instance.client).auth.currentSession != null
+            ? AuthAuthenticated(
+                (supabase ?? Supabase.instance.client).auth.currentSession!,
+              )
+            : AuthInitial(),
+      ) {
     on<AuthSignInWithEmail>(_onSignInWithEmail);
     on<AuthSignUpWithEmail>(_onSignUpWithEmail);
     on<AuthSignInWithGoogle>(_onSignInWithGoogle);
@@ -75,28 +81,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       const iosClientId =
           '805163956327-gvr31r03mpmqd5cn8frfcvbirsd0kj9f.apps.googleusercontent.com';
 
-     
-  final scopes = ['email', 'profile'];
-  final googleSignIn = GoogleSignIn.instance;
-  await googleSignIn.initialize(
-    serverClientId: webClientId,
-    clientId: iosClientId,
-  );
-  final googleUser = await googleSignIn.attemptLightweightAuthentication();
-  // or await googleSignIn.authenticate(); which will return a GoogleSignInAccount or throw an exception
-  if (googleUser == null) {
-    throw AuthException('Failed to sign in with Google.');
-  }
-  /// Authorization is required to obtain the access token with the appropriate scopes for Supabase authentication,
-  /// while also granting permission to access user information.
-  final authorization =
-      await googleUser.authorizationClient.authorizationForScopes(scopes) ??
-      await googleUser.authorizationClient.authorizeScopes(scopes);
-  final idToken = googleUser.authentication.idToken;
-  if (idToken == null) {
-    throw AuthException('No ID Token found.');
-  }
+      final scopes = ['email', 'profile'];
+      final googleSignIn = GoogleSignIn.instance;
+      await googleSignIn.initialize(
+        serverClientId: webClientId,
+        clientId: iosClientId,
+      );
+      final googleUser = await googleSignIn.attemptLightweightAuthentication();
+      // or await googleSignIn.authenticate(); which will return a GoogleSignInAccount or throw an exception
+      if (googleUser == null) {
+        throw AuthException('Failed to sign in with Google.');
+      }
 
+      /// Authorization is required to obtain the access token with the appropriate scopes for Supabase authentication,
+      /// while also granting permission to access user information.
+      final authorization =
+          await googleUser.authorizationClient.authorizationForScopes(scopes) ??
+          await googleUser.authorizationClient.authorizeScopes(scopes);
+      final idToken = googleUser.authentication.idToken;
+      if (idToken == null) {
+        throw AuthException('No ID Token found.');
+      }
 
       final response = await _supabase.auth.signInWithIdToken(
         provider: OAuthProvider.google,

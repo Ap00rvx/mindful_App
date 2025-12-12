@@ -73,7 +73,7 @@ class _AuthViewState extends State<AuthView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Typewriter Text
-                    SizedBox(height: MediaQuery.of(context).size.height * 0.25),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.17),
                     SizedBox(
                       height: 100,
                       child: DefaultTextStyle(
@@ -295,6 +295,28 @@ class _AuthViewState extends State<AuthView> {
                               );
                             },
                           ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      spacing: 10,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Secured by"),
+                        Image.asset(
+                          "assets/images/supabase-logo.png",
+                          height: 70,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'By continuing, you agree to our Terms of Service ',
+                          style: TextStyle(color: Colors.white54),
                         ),
                       ],
                     ),

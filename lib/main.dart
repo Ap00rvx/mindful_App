@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:mindful_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:mindful_app/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/router/app_router.dart';
 import 'theme/app_theme.dart';
@@ -23,10 +26,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Mindful App',
-      theme: AppTheme.darkTheme,
-      routerConfig: AppRouter.router,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => AuthBloc()),
+        
+      ],
+      child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        title: 'Mindful App',
+        theme: AppTheme.darkTheme,
+        routerConfig: AppRouter.router,
+      ),
     );
   }
 }
