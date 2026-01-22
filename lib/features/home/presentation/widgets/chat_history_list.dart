@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mindful_app/features/chat/data/datasources/chat_remote_data_source.dart';
 import 'package:mindful_app/features/chat/data/repositories/chat_repository_impl.dart';
 import 'package:mindful_app/features/chat/domain/usecases/get_chats_usecase.dart';
@@ -11,14 +12,24 @@ import 'package:mindful_app/features/chat/presentation/bloc/chat_state.dart';
 import 'package:mindful_app/theme/app_colors.dart';
 import 'package:shimmer/shimmer.dart';
 
+import 'package:mindful_app/features/chat/domain/usecases/create_chat_usecase.dart';
+import 'package:mindful_app/features/chat/domain/usecases/delete_chat_usecase.dart';
+import 'package:mindful_app/features/chat/domain/usecases/get_chat_messages_usecase.dart';
+import 'package:mindful_app/features/chat/domain/usecases/send_message_usecase.dart';
+
 class ChatHistoryList extends StatelessWidget {
   const ChatHistoryList({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final chatRepository = ChatRepositoryImpl(ChatRemoteDataSourceImpl());
     return BlocProvider(
       create: (context) => ChatBloc(
-        GetChatsUseCase(ChatRepositoryImpl(ChatRemoteDataSourceImpl())),
+        getChatsUseCase: GetChatsUseCase(chatRepository),
+        sendMessageUseCase: SendMessageUseCase(chatRepository),
+        getChatMessagesUseCase: GetChatMessagesUseCase(chatRepository),
+        createChatUseCase: CreateChatUseCase(chatRepository),
+        deleteChatUseCase: DeleteChatUseCase(chatRepository),
       )..add(GetChats()),
       child: const _ChatHistoryListView(),
     );
@@ -144,7 +155,10 @@ class _ChatHistoryListViewState extends State<_ChatHistoryListView> {
                       size: 14,
                     ),
                     onTap: () {
-                      debugPrint('Tapped on chat: ${chat.id}');
+                      context.push(
+                        '/chat/${chat.id}',
+                        extra: {'title': chat.title},
+                      );
                     },
                   );
                 },

@@ -45,5 +45,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Recognize speech for chat input</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone access for speech to text</string>
 </dict>
 </plist>
